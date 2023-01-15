@@ -1,6 +1,6 @@
 import { httpServer } from "./src/http_server/index.js";
-import { mouse } from "@nut-tree/nut-js";
 import { createWebSocketStream, WebSocket, WebSocketServer } from "ws";
+import { proceedData } from "./src/proceedData.js";
 
 const HTTP_PORT = 8181;
 
@@ -18,8 +18,8 @@ ws.on("connection", (websocket) => {
     decodeStrings: false,
   });
   let msg = "";
-  duplexStream.on("data", (data) => {
-    console.log(data);
-    duplexStream.write(data.toString());
+  duplexStream.on("data", async (data) => {
+    const msg = await proceedData(data);
+    duplexStream.write(msg);
   });
 });
