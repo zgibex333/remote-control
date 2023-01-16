@@ -49,8 +49,8 @@ export const proceedData = async (data) => {
       return message;
     }
     case COMMANDS.prnt_scrn: {
-      printScreenHandler(message);
-      return;
+      const buffer = await printScreenHandler(message);
+      return `${message} ${buffer}`;
     }
     default:
       console.log("error");

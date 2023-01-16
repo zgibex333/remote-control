@@ -10,16 +10,25 @@ httpServer.listen(HTTP_PORT);
 const WS_PORT = 8080;
 const ws = new WebSocketServer({
   port: WS_PORT,
+  host: "localhost",
+});
+
+ws.on("listening", () => {
+  console.log(
+    `WS server is listening: address ${ws.address().address} | port: ${
+      ws.address().port
+    }`
+  );
 });
 
 ws.on("connection", (websocket) => {
-  console.log("connected");
   const duplexStream = createWebSocketStream(websocket, {
     decodeStrings: false,
   });
-  let msg = "";
   duplexStream.on("data", async (data) => {
     const msg = await proceedData(data);
+    console.log(`received: ${data.toString()}`)
     duplexStream.write(msg);
+    console.log(`sent: ${msg}`);
   });
 });

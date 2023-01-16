@@ -10,9 +10,10 @@ import {
   centerOf,
   Region,
   Button,
-  screen
+  screen,
 } from "@nut-tree/nut-js";
 import { doubleDimensions, singleDemensionPixels } from "./helpers.js";
+import Jimp from "jimp";
 
 mouse.config = { mouseSpeed: 500 };
 
@@ -90,6 +91,24 @@ export const circleHandler = (message) => {
     await mouse.releaseButton(Button.LEFT);
   })();
 };
-export const printScreenHandler = (message) => {
-  screen.capture()
+export const printScreenHandler = async (message) => {
+  const { x: currentX, y: currentY } = await mouse.getPosition();
+  const region = new Region(currentX - 100, currentY - 100, 200, 200);
+  const screenHeight = await screen.height();
+  const screenWidth = await screen.width();
+  if (region.left < 0) region.left = 0;
+  if (region.top < 0) region.top = 0;
+  if (region.top + 200 > screenHeight) region.top = screenHeight - 200;
+  if (region.left + 200 > screenWidth) region.left = screenWidth - 200;
+  const screenShot = await screen.grabRegion(region);
+
+  let jimpImg = new Jimp({
+    data: screenShot.data,
+    width: screenShot.width,
+    height: screenShot.height,
+  });
+  const img200x200 = jimpImg.resize(200, 200);
+  const base64 = await img200x200.getBase64Async(Jimp.MIME_PNG);
+  const matches = base64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+  return matches[2];
 };
