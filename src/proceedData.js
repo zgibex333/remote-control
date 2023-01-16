@@ -38,15 +38,15 @@ export const proceedData = async (data) => {
     }
     case COMMANDS.draw_square: {
       squareHandler(message);
-      return cmd;
+      return message;
     }
     case COMMANDS.draw_rectangle: {
       rectangleHandler(message);
-      return cmd;
+      return message;
     }
     case COMMANDS.draw_circle: {
       circleHandler(message);
-      return cmd;
+      return message;
     }
     case COMMANDS.prnt_scrn: {
       printScreenHandler(message);

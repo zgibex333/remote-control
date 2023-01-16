@@ -10,6 +10,7 @@ import {
   centerOf,
   Region,
   Button,
+  screen
 } from "@nut-tree/nut-js";
 import { doubleDimensions, singleDemensionPixels } from "./helpers.js";
 
@@ -65,5 +66,30 @@ export const rectangleHandler = (message) => {
     await mouse.releaseButton(Button.LEFT);
   })();
 };
-export const circleHandler = (message) => {};
-export const printScreenHandler = (message) => {};
+export const circleHandler = (message) => {
+  const radius = singleDemensionPixels(message);
+  (async () => {
+    const { x: centerX, y: currentY } = await mouse.getPosition();
+    const centerY = Math.floor(currentY + radius / 2);
+    let i = 0;
+    const point = new Point(
+      centerX + radius * Math.cos(i),
+      centerY + radius * Math.sin(i)
+    );
+    await mouse.move(straightTo(point));
+    await mouse.pressButton(Button.LEFT);
+    while (i !== (6.35).toFixed(2)) {
+      const point = new Point(
+        centerX + radius * Math.cos(i),
+        centerY + radius * Math.sin(i)
+      );
+      await mouse.move(straightTo(point));
+      i = parseFloat(i) + parseFloat(0.05);
+      i = i.toFixed(2);
+    }
+    await mouse.releaseButton(Button.LEFT);
+  })();
+};
+export const printScreenHandler = (message) => {
+  screen.capture()
+};
