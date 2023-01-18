@@ -48,3 +48,8 @@ ws.on("connection", (websocket) => {
     }
   });
 });
+
+process.on("SIGINT", () => {
+  console.log("WS Server had been closed");
+  ws.close();
+});
