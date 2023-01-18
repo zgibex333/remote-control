@@ -1,6 +1,6 @@
-import { httpServer } from "./src/http_server/index";
-import { AddressInfo, createWebSocketStream, WebSocketServer } from "ws";
-import { proceedData } from "./src/proceedData";
+import { createWebSocketStream, WebSocketServer, AddressInfo } from "ws";
+import { httpServer } from "./src/http_server/index.js";
+import { proceedData } from "./src/proceedData.js";
 
 const HTTP_PORT = 8181;
 
@@ -21,17 +21,30 @@ ws.on("listening", () => {
 });
 
 ws.on("connection", (websocket) => {
+  ws.on("error", () => {
+    websocket.close();
+    ws.close();
+  });
+
   const duplexStream = createWebSocketStream(websocket, {
     decodeStrings: false,
   });
   duplexStream.on("data", async (data) => {
-    const msg = await proceedData(data);
-    console.log(`received: ${data.toString()}`);
-    duplexStream.write(msg);
-    if (msg?.includes("prnt_scrn")) {
-      console.log(`sent: ${msg.substring(0, 30)}...`);
-    } else {
-      console.log(`sent: ${msg}`);
+    try {
+      const msg = await proceedData(data);
+      console.log(`received: ${data.toString()}`);
+      if (msg?.includes("prnt_scrn") || msg?.includes("mouse_position")) {
+        duplexStream.write(msg);
+      } else {
+        duplexStream.write(msg?.replace(/ /g, "_"));
+      }
+      if (msg?.includes("prnt_scrn")) {
+        console.log(`sent: ${msg.substring(0, 30)}...`);
+      } else {
+        console.log(`sent: ${msg}`);
+      }
+    } catch {
+      console.log("Server Error has happened");
     }
   });
 });

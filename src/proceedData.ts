@@ -1,4 +1,4 @@
-import { COMMANDS } from "./constants";
+import { COMMANDS } from "./constants.js";
 import {
   circleHandler,
   moveDownHandler,
@@ -9,8 +9,8 @@ import {
   printScreenHandler,
   rectangleHandler,
   squareHandler,
-} from "./handlers";
-import { getCMD } from "./helpers";
+} from "./handlers.js";
+import { getCMD } from "./helpers.js";
 
 export const proceedData = async (data: Buffer) => {
   const cmd = getCMD(data);
@@ -56,3 +56,5 @@ export const proceedData = async (data: Buffer) => {
       console.log("error");
   }
 };
+
+
